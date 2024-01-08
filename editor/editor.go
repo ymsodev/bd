@@ -1,4 +1,4 @@
-package main
+package editor
 
 import (
 	"github.com/charmbracelet/bubbles/textarea"
@@ -7,8 +7,9 @@ import (
 
 type model struct {
 	textarea textarea.Model
-	value string
-	err error
+	value    string
+	err      error
+	done     bool
 }
 
 func initModel() model {
@@ -18,8 +19,9 @@ func initModel() model {
 
 	return model{
 		textarea: t,
-		value: "",
-		err: nil,
+		value:    "",
+		err:      nil,
+		done:     false,
 	}
 }
 
@@ -35,6 +37,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch msg.Type {
 		case tea.KeyEsc:
 			m.value = m.textarea.Value()
+			m.done = true
 			return m, tea.Quit
 		}
 	case error:
@@ -47,10 +50,14 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m model) View() string {
+	if m.done {
+		// clear screen
+		return ""
+	}
 	return m.textarea.View()
 }
 
-func runEditor() (string, error) {
+func Run() (string, error) {
 	m, err := tea.NewProgram(initModel()).Run()
 	if err != nil {
 		return "", err

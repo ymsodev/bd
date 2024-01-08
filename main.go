@@ -4,9 +4,13 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"encoding/json"
-	"time"
+	"path/filepath"
+
+	"github.com/ymsodev/braindump/editor"
+	"github.com/ymsodev/braindump/store"
 )
+
+const dumpFileName = ".bd"
 
 func printHelp() {
 	fmt.Println("usage: bd <command>")
@@ -16,43 +20,24 @@ func printHelp() {
 	fmt.Println("  help		Print help message")
 }
 
-func addEntry() {
-	s, err := runEditor()
+func addEntry(path string) {
+	s, err := editor.Run()
 	if err != nil {
 		log.Fatal(err)
 	}
-	if err := writeEntry("bd.txt", s); err != nil {
+	if err := store.Write(path, s); err != nil {
 		log.Fatal(err)
 	}
 }
 
-type entry struct {
-	Time int64 `json:"time"`
-	Content string `json:"content"`
-}
-
-func writeEntry(path string, content string) error {
-	f, err := os.OpenFile(path, os.O_RDWR|os.O_APPEND|os.O_CREATE, 0755)
+func showLogs(path string) {
+	entries, err := store.Read(path)
 	if err != nil {
-		return err
+		log.Fatal(err)
 	}
-	defer f.Close()
-
-	e := &entry{
-		Time: time.Now().Unix(),
-		Content: content,
+	for _, e := range entries {
+		fmt.Println(e.Content)
 	}
-	dat, err := json.MarshalIndent(e, "", "")
-	if err != nil {
-		return err
-	}
-	f.Write(dat)
-	f.WriteString("\r\n")
-	return nil	
-}
-
-func showLogs() {
-	fmt.Println("TODO: show logs!")
 }
 
 func main() {
@@ -61,14 +46,20 @@ func main() {
 		os.Exit(1)
 	}
 
+	homedir, err := os.UserHomeDir()
+	if err != nil {
+		log.Fatal(err)
+	}
+	dumpPath := filepath.Join(homedir, dumpFileName)
+
 	switch cmd := os.Args[1]; cmd {
-		case "add":
-			addEntry()
-		case "log":
-			showLogs()
-		case "help":
-			printHelp()
-		default:
-			log.Fatalf("invalid command: '%s'\n", cmd)
+	case "add":
+		addEntry(dumpPath)
+	case "log":
+		showLogs(dumpPath)
+	case "help":
+		printHelp()
+	default:
+		log.Fatalf("invalid command: '%s'\n", cmd)
 	}
 }
