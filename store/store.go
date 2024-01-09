@@ -49,17 +49,21 @@ func Read(path string) ([]Entry, error) {
 }
 
 func Write(path string, content string) error {
+	if len(content) == 0 {
+		return nil
+	}
+	
 	f, err := os.OpenFile(path, os.O_RDWR|os.O_APPEND|os.O_CREATE, 0755)
 	if err != nil {
 		return err
 	}
 	defer f.Close()
 
-	e := &Entry{
+	e := Entry{
 		Time:    time.Now().Unix(),
 		Content: content,
 	}
-	dat, err := json.Marshal(e)
+	dat, err := json.Marshal(&e)
 	if err != nil {
 		return err
 	}

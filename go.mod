@@ -1,4 +1,4 @@
-module github.com/ymsodev/braindump
+module github.com/ymsodev/bd
 
 go 1.21.5
 

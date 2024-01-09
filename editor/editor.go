@@ -1,6 +1,10 @@
 package editor
 
 import (
+	"fmt"
+	"strings"
+	"time"
+	
 	"github.com/charmbracelet/bubbles/textarea"
 	tea "github.com/charmbracelet/bubbletea"
 )
@@ -10,6 +14,8 @@ type model struct {
 	value    string
 	err      error
 	done     bool
+	saved    bool
+	savedAt  time.Time
 }
 
 func initModel() model {
@@ -22,6 +28,7 @@ func initModel() model {
 		value:    "",
 		err:      nil,
 		done:     false,
+		saved:    false,
 	}
 }
 
@@ -35,8 +42,11 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.Type {
-		case tea.KeyEsc:
+		case tea.KeyCtrlS:
 			m.value = m.textarea.Value()
+			m.saved = true
+			m.savedAt = time.Now()
+		case tea.KeyEsc:
 			m.done = true
 			return m, tea.Quit
 		}
@@ -54,7 +64,17 @@ func (m model) View() string {
 		// clear screen
 		return ""
 	}
-	return m.textarea.View()
+	
+	var sb strings.Builder
+	sb.WriteString(m.textarea.View())
+	sb.WriteString("\npress ctrl-s to save, esc to quit")
+
+	if m.saved {
+		sb.WriteRune('\n')
+		sb.WriteString(fmt.Sprintf("last saved at %s", m.savedAt))
+	}
+
+	return sb.String()
 }
 
 func Run() (string, error) {

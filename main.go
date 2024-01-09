@@ -6,15 +6,15 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/ymsodev/braindump/editor"
-	"github.com/ymsodev/braindump/store"
+	"github.com/ymsodev/bd/editor"
+	"github.com/ymsodev/bd/store"
 )
 
-const dumpFileName = ".bd"
+const dumpFileName = ".brain_dump"
 
 func printHelp() {
 	fmt.Println("usage: bd <command>")
-	fmt.Println("Commands:")
+	fmt.Println("commands:")
 	fmt.Println("  add		Add a new entry")
 	fmt.Println("  log		Show entry logs")
 	fmt.Println("  help		Print help message")
