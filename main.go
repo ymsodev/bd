@@ -10,14 +10,13 @@ import (
 	"github.com/ymsodev/bd/store"
 )
 
-const dumpFileName = ".brain_dump"
+const dumpFileName = ".braindump"
 
 func printHelp() {
 	fmt.Println("usage: bd <command>")
 	fmt.Println("commands:")
 	fmt.Println("  add		Add a new entry")
 	fmt.Println("  log		Show entry logs")
-	fmt.Println("  help		Print help message")
 }
 
 func addEntry(path string) {
@@ -57,8 +56,6 @@ func main() {
 		addEntry(dumpPath)
 	case "log":
 		showLogs(dumpPath)
-	case "help":
-		printHelp()
 	default:
 		log.Fatalf("invalid command: '%s'\n", cmd)
 	}

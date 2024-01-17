@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 	"time"
-	
+
 	"github.com/charmbracelet/bubbles/textarea"
 	tea "github.com/charmbracelet/bubbletea"
 )
@@ -64,14 +64,14 @@ func (m model) View() string {
 		// clear screen
 		return ""
 	}
-	
+
 	var sb strings.Builder
 	sb.WriteString(m.textarea.View())
 	sb.WriteString("\npress ctrl-s to save, esc to quit")
 
 	if m.saved {
 		sb.WriteRune('\n')
-		sb.WriteString(fmt.Sprintf("last saved at %s", m.savedAt))
+		sb.WriteString(fmt.Sprintf("last saved at %s", m.savedAt.Format(time.TimeOnly)))
 	}
 
 	return sb.String()
